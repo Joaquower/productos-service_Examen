@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Product;
-import com.example.demo.repository.ProductRepository;
+import com.example.demo.dto.ProductRequestDTO;
+import com.example.demo.dto.ProductResponseDTO;
+import com.example.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,25 +13,28 @@ import java.util.List;
 @RequestMapping("/productos")
 @RequiredArgsConstructor
 public class ProductController {
-    private final ProductRepository productRepository;
+
+    private final ProductService productService;
 
     @GetMapping
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public List<ProductResponseDTO> getAll() {
+        return productService.getAllProducts();
     }
 
     @PostMapping
-    public Product create(@RequestBody Product product) {
-        return productRepository.save(product);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponseDTO create(@RequestBody ProductRequestDTO productRequestDTO) {
+        return productService.createProduct(productRequestDTO);
     }
 
     @GetMapping("/{id}")
-    public Product getById(@PathVariable String id) {
-        return productRepository.findById(id).orElse(null);
+    public ProductResponseDTO getById(@PathVariable String id) {
+        return productService.getProductById(id);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
-        productRepository.deleteById(id);
+        productService.deleteProduct(id);
     }
 }
